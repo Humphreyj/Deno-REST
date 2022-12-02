@@ -5,18 +5,21 @@ export const authorized = async (ctx, next) => {
   try {
     const jwt = getToken(ctx.request.headers);
     if (!jwt) {
-      throw new Error("!jwt");
+      ctx.response.status = 400;
+      ctx.response.body = "Mising Something...";
     }
     const secret = Deno.env.get("API_SECRET");
-    const key = await generateKey(secret);
-    const payload = await verify(jwt, key);
-    if (!payload) {
-      ctx.throw(401, "Unauthorized");
-    }
 
-    await next();
+    try {
+      const key = await generateKey(secret);
+      await verify(jwt, key);
+      await next();
+    } catch (error) {
+      ctx.response.status = 401;
+      ctx.response.body = "Unauthorized";
+    }
   } catch (err) {
-    console.error(err);
-    ctx.throw(401, "Unauthorized");
+    ctx.response.status = 401;
+    ctx.response.body = "Unauthorized";
   }
 };

@@ -21,11 +21,6 @@ export const auth = async (ctx) => {
 };
 
 const getToken = async (payload) => {
-  //   const key = await crypto.subtle.generateKey(
-  //     { name: "HMAC", hash: "SHA-512" },
-  //     true,
-  //     ["sign", "verify"]
-  //   );
   const secret = Deno.env.get("API_SECRET");
 
   const key = await generateKey(secret);
